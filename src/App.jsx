@@ -93,7 +93,8 @@ function App() {
           })}
         </div>
 
-        <CommonSettings settings={settings} onChange={updateSetting} />
+        {/* Pressure altitude and slope aren't used on the Obstacles tab */}
+        <CommonSettings settings={settings} onChange={updateSetting} showDetails={activeTab !== 'obstacle'} />
 
         {TABS.map(({ id, Component }) => (
           <div
