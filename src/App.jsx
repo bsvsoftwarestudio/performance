@@ -93,8 +93,8 @@ function App() {
           })}
         </div>
 
-        {/* Pressure altitude and slope aren't used on the Obstacles tab */}
-        <CommonSettings settings={settings} onChange={updateSetting} showDetails={activeTab !== 'obstacle'} />
+        {/* The Obstacles tab has its own airstrip dimensions */}
+        {activeTab !== 'obstacle' && <CommonSettings settings={settings} onChange={updateSetting} />}
 
         {TABS.map(({ id, Component }) => (
           <div

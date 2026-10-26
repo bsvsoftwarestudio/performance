@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import SelectField from './SelectField.jsx'
 import { calculateObstacleDisplacement } from '../utilities/obstacleCalculator.js'
-import { OBSTACLE_DISTANCES, OBSTACLE_INCLINATIONS } from '../utilities/options.js'
+import { OBSTACLE_DISTANCES, OBSTACLE_INCLINATIONS, RUNWAY_DISTANCES } from '../utilities/options.js'
 import { TODA_MAX_FACTOR, usableToda } from '../utilities/limits.js'
 
 const round = (m) => Math.round(m)
@@ -27,7 +27,7 @@ function DistanceGrid({ distances }) {
   )
 }
 
-// Landing displacement card; the runway length is the LDA from the common settings
+// Landing displacement card; the runway length (LDA) is the surveyed length
 function LandingCard({ title, rule, displacement, lda }) {
   const displaced = displacement > 0
   const remaining = lda - round(displacement)
@@ -73,7 +73,9 @@ function LandingCard({ title, rule, displacement, lda }) {
   )
 }
 
-function Obstacle({ tora, lda }) {
+function Obstacle() {
+  // TORA, TODA and LDA all start from the surveyed length
+  const [surveyedLength, setSurveyedLength] = useState(1000)
   const [distance, setDistance] = useState(400)
   const [inclination, setInclination] = useState(1)
 
@@ -89,7 +91,7 @@ function Obstacle({ tora, lda }) {
   const takeoffDisplacement = takeoff ? round(takeoff.displacement) : null
   const takeoffClearway = takeoff ? round(takeoff.clearway) : null
   // Displaced: TORA shortened and TODA = TORA (no clearway). Otherwise TORA unchanged and TODA = TORA + clearway
-  const obstacleTora = takeoff ? tora - takeoffDisplacement : null
+  const obstacleTora = takeoff ? surveyedLength - takeoffDisplacement : null
   // TODA with the clearway is limited to TORA x 1.5
   const unlimitedToda = takeoff ? obstacleTora + takeoffClearway : null
   const obstacleToda = takeoff ? usableToda(obstacleTora, unlimitedToda) : null
@@ -97,29 +99,45 @@ function Obstacle({ tora, lda }) {
 
   return (
     <section className="phase">
-      <fieldset className="input-group input-group--conditions">
-        <legend>Obstacle</legend>
-        <div className="fields fields--pair">
-          <SelectField
-            id="obstacle-distance"
-            label="Distance from threshold"
-            unit="m"
-            value={distance}
-            options={OBSTACLE_DISTANCES}
-            onChange={setDistance}
-          />
-          <SelectField
-            id="obstacle-inclination"
-            label="Inclination to top of obstacle"
-            value={inclination}
-            options={OBSTACLE_INCLINATIONS}
-            onChange={setInclination}
-          />
-        </div>
-        <p className="check-note">
-          Runway lengths are taken from the airstrip dimensions
-        </p>
-      </fieldset>
+      <div className="input-groups">
+        <fieldset className="input-group input-group--dimensions">
+          <legend>Airstrip dimensions</legend>
+          <div className="fields">
+            <SelectField
+              id="obstacle-surveyed-length"
+              label="Surveyed length"
+              unit="m"
+              value={surveyedLength}
+              options={RUNWAY_DISTANCES}
+              onChange={setSurveyedLength}
+            />
+          </div>
+          <p className="check-note">
+            TORA, TODA and LDA are calculated from the surveyed length
+          </p>
+        </fieldset>
+
+        <fieldset className="input-group input-group--conditions">
+          <legend>Obstacle</legend>
+          <div className="fields">
+            <SelectField
+              id="obstacle-distance"
+              label="Distance from threshold"
+              unit="m"
+              value={distance}
+              options={OBSTACLE_DISTANCES}
+              onChange={setDistance}
+            />
+            <SelectField
+              id="obstacle-inclination"
+              label="Inclination to top of obstacle"
+              value={inclination}
+              options={OBSTACLE_INCLINATIONS}
+              onChange={setInclination}
+            />
+          </div>
+        </fieldset>
+      </div>
 
       {error ? (
         <div className="check check--fail" role="alert">
@@ -154,7 +172,7 @@ function Obstacle({ tora, lda }) {
             )}
             {obstacleTora <= 0 ? (
               <p className="check-status" role="alert">
-                Warning: the reduction is longer than the runway ({tora} m).
+                Warning: the reduction is longer than the runway ({surveyedLength} m).
               </p>
             ) : (
               <>
@@ -169,7 +187,7 @@ function Obstacle({ tora, lda }) {
                       id: 'tora',
                       label: 'TORA',
                       value: obstacleTora,
-                      formula: takeoff.displacementRequired ? `${tora} m − ${takeoffDisplacement} m` : null,
+                      formula: takeoff.displacementRequired ? `${surveyedLength} m − ${takeoffDisplacement} m` : null,
                     },
                     {
                       id: 'toda',
@@ -192,13 +210,13 @@ function Obstacle({ tora, lda }) {
             title="OPS B 7.9.2 b"
             rule="3.5% line from the top of the obstacle to the runway surface."
             displacement={result.landingOpsB.displacement}
-            lda={lda}
+            lda={surveyedLength}
           />
           <LandingCard
             title="OPS C 6.1.4"
             rule="5% line from the top of the obstacle to the end of the clearway (at 2.5%), then adding in the 90m clearway."
             displacement={result.landingOpsC.displacement}
-            lda={lda}
+            lda={surveyedLength}
           />
         </>
       )}
