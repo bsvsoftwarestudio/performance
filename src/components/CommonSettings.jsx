@@ -2,19 +2,17 @@ import SelectField from './SelectField.jsx'
 import { PRESSURE_ALTITUDES, RUNWAY_DISTANCES, SLOPES } from '../utilities/options.js'
 import { TODA_MAX_FACTOR, usableToda } from '../utilities/limits.js'
 
-// Airstrip and conditions shared by every tab, shown under the tab bar; `onChange(key)` returns the setter for that setting.
-// `showDetails` hides the pressure altitude / slope group for tabs that don't use it (the values are kept)
-function CommonSettings({ settings, onChange, showDetails = true }) {
+// Airstrip and conditions shared by the take-off and landing tabs, shown under the tab bar; `onChange(key)` returns the setter for that setting
+function CommonSettings({ settings, onChange }) {
   const { tora, toda, lda, pressureAltitude, slopePercent } = settings
   const todaLimit = usableToda(tora, toda)
 
   return (
     <section className="common-settings" aria-label="Common settings">
-      <div className={showDetails ? 'input-groups' : 'input-groups input-groups--stacked'}>
+      <div className="input-groups">
         <fieldset className="input-group input-group--dimensions">
-          <legend>Airstrip dimensions</legend>
-          {/* Full width when the details group is hidden, so the fields sit in two columns */}
-          <div className={showDetails ? 'fields' : 'fields fields--pair'}>
+          <legend>Airstrip lengths</legend>
+          <div className="fields">
             <SelectField
               id="common-tora"
               label="Take-off run available (TORA)"
@@ -53,28 +51,26 @@ function CommonSettings({ settings, onChange, showDetails = true }) {
           )}
         </fieldset>
 
-        {showDetails && (
-          <fieldset className="input-group input-group--environment">
-            <legend>Airstrip details</legend>
-            <div className="fields">
-              <SelectField
-                id="common-pa"
-                label="Pressure altitude"
-                unit="ft"
-                value={pressureAltitude}
-                options={PRESSURE_ALTITUDES}
-                onChange={onChange('pressureAltitude')}
-              />
-              <SelectField
-                id="common-slope"
-                label="Slope"
-                value={slopePercent}
-                options={SLOPES}
-                onChange={onChange('slopePercent')}
-              />
-            </div>
-          </fieldset>
-        )}
+        <fieldset className="input-group input-group--environment">
+          <legend>Airstrip details</legend>
+          <div className="fields">
+            <SelectField
+              id="common-pa"
+              label="Pressure altitude"
+              unit="ft"
+              value={pressureAltitude}
+              options={PRESSURE_ALTITUDES}
+              onChange={onChange('pressureAltitude')}
+            />
+            <SelectField
+              id="common-slope"
+              label="Slope"
+              value={slopePercent}
+              options={SLOPES}
+              onChange={onChange('slopePercent')}
+            />
+          </div>
+        </fieldset>
       </div>
     </section>
   )
