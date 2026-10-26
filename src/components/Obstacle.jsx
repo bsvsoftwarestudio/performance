@@ -151,7 +151,7 @@ function Obstacle() {
           <div className={`check ${cardClass(obstacleTora, takeoff.displacementRequired)}`} aria-live="polite">
             <p className="check-title">OPS C 6.1.5</p>
             <p className="check-note obstacle-rule">
-              5% line from the top of the obstacle, then a 2.5% clearway (90m) if available.
+              5% line from the top of the obstacle, then a 2.5% clearway if available.
             </p>
             {takeoff.displacementRequired ? (
               <div className="displacement-box">
