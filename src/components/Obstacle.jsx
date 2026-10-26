@@ -133,17 +133,17 @@ function Obstacle({ tora, lda }) {
           <div className={`check ${cardClass(obstacleTora, takeoff.displacementRequired)}`} aria-live="polite">
             <p className="check-title">OPS C 6.1.5</p>
             <p className="check-note obstacle-rule">
-              5% line from the top of the obstacle, then a 2.5% clearway line if available.
+              5% line from the top of the obstacle, then a 2.5% clearway (90m) if available.
             </p>
             {takeoff.displacementRequired ? (
               <div className="displacement-box">
-                <p className="displacement-box-label">Displacement required</p>
+                <p className="displacement-box-label">Reduction in Length Required</p>
                 <p className="displacement-box-value">{takeoffDisplacement} m</p>
               </div>
             ) : (
               <dl className="check-figures">
                 <div>
-                  <dt>Displacement</dt>
+                  <dt>Reduction</dt>
                   <dd>None</dd>
                 </div>
                 <div>
@@ -154,14 +154,14 @@ function Obstacle({ tora, lda }) {
             )}
             {obstacleTora <= 0 ? (
               <p className="check-status" role="alert">
-                Warning: the displacement is longer than the runway ({tora} m).
+                Warning: the reduction is longer than the runway ({tora} m).
               </p>
             ) : (
               <>
                 <p className="check-status">
                   {takeoff.displacementRequired
-                    ? 'Displacement required for take-off. No clearway is available.'
-                    : 'No displacement required for take-off. A clearway is available.'}
+                    ? 'Reduction in length required for take-off. No clearway is available.'
+                    : 'No reduction in length required for take-off. A clearway is available.'}
                 </p>
                 <DistanceGrid
                   distances={[
