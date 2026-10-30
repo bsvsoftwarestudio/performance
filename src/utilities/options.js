@@ -5,7 +5,7 @@ import { degToPercent } from './obstacleCalculator.js'
 // Dropdown options shared by the take-off and landing inputs
 export const PRESSURE_ALTITUDES = range(0, 8000, 100).reverse() // ft
 export const TEMPERATURES = range(10, 40, 1).reverse() // deg C
-export const RUNWAY_DISTANCES = [...range(400, 1280, 20), ...range(1300, 2900, 100), ...range(3000, 4000, 200)].reverse() // m
+export const RUNWAY_DISTANCES = [...range(300, 1280, 20), ...range(1300, 2900, 100), ...range(3000, 4000, 200)].reverse() // m
 // Slope as reported on airstrip charts, in percent: + upslope, - downslope
 export const SLOPES = range(-6, 6, 0.5).map((pct) => {
   const deg = C208B_Corrections.percentToDegrees(Math.abs(pct)).toFixed(2)
